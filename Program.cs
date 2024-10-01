@@ -27,6 +27,7 @@ namespace AddressBookApp
             Email = email;
         }
 
+        // Format in which output will be displayed
         public override string ToString()
         {
             return $"Name: {FirstName} {LastName}\nAddress: {Address}, {City}, {State} - {Zip}\nPhone: {PhoneNumber}, Email: {Email}";
@@ -47,7 +48,7 @@ namespace AddressBookApp
 
         public void AddContact(Contact contact)
         {
-            Contacts.Add(contact);
+            Contacts.Add(contact);// adds the deatils passed from below
             Console.WriteLine("Contact added successfully.");
         }
 
@@ -64,6 +65,47 @@ namespace AddressBookApp
                 Console.WriteLine(contact);
                 Console.WriteLine("-------------------------");
             }
+        }
+
+       
+        // first it will search for the contact and then change the values 
+        public void EditContact(string firstName, string lastName)
+        {
+            Contact contact = FindContact(firstName, lastName);
+            if (contact == null)
+            {
+                Console.WriteLine("Contact not found.");
+                return;
+            }
+
+            Console.Write("Enter new Address: ");
+            contact.Address = Console.ReadLine();
+            Console.Write("Enter new City: ");
+            contact.City = Console.ReadLine();
+            Console.Write("Enter new State: ");
+            contact.State = Console.ReadLine();
+            Console.Write("Enter new Zip: ");
+            contact.Zip = Console.ReadLine();
+            Console.Write("Enter new Phone Number: ");
+            contact.PhoneNumber = Console.ReadLine();
+            Console.Write("Enter new Email: ");
+            contact.Email = Console.ReadLine();
+
+            Console.WriteLine("Contact updated successfully.");
+        }
+
+        //This is used to find contact if conatct if user doesn't exits then it will pass null to EditContact() above
+        public Contact FindContact(string firstName, string lastName)
+        {
+            foreach (var contact in Contacts)
+            {
+                if (contact.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase) &&
+                    contact.LastName.Equals(lastName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return contact;  // Return the contact if found
+                }
+            }
+            return null;
         }
 
     }
@@ -84,7 +126,8 @@ namespace AddressBookApp
             {
                 Console.WriteLine("1. Add Contact");
                 Console.WriteLine("2. Display Contacts");
-                Console.WriteLine("3. Exit");
+                Console.WriteLine("3. Edit Contact");
+                Console.WriteLine("4. Exit");
                 Console.Write("Choose an option: ");
                 int option = Convert.ToInt32(Console.ReadLine());
 
@@ -97,6 +140,9 @@ namespace AddressBookApp
                         addressBook.DisplayContacts();
                         break;
                     case 3:
+                        EditContact();// Will jump to EditContact() present below
+                        break;
+                    case 4:
                         return;
                     default:
                         Console.WriteLine("Invalid option, try again.");
@@ -105,12 +151,16 @@ namespace AddressBookApp
             }
         }
 
+
+        //For adding new Contact
         public void AddNewContact()
         {
-            var contact = GetContactDetailsFromUser();
-            addressBook.AddContact(contact);
+            var contact = GetContactDetailsFromUser(); // stores all the deatils of user 
+            addressBook.AddContact(contact); // passed to the AddContact() in AddressBook Class
         }
 
+
+        //Code to get information from the user
         public Contact GetContactDetailsFromUser()
         {
             Console.Write("Enter First Name: ");
@@ -131,6 +181,17 @@ namespace AddressBookApp
             string email = Console.ReadLine();
 
             return new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email);
+        }
+
+        //This part will take the existing or non existing user name and pass the value to EditContact() present in AddressBook Class
+        public void EditContact()
+        {
+            Console.Write("Enter First Name of the Contact to edit: ");
+            string firstName = Console.ReadLine();
+            Console.Write("Enter Last Name of the Contact to edit: ");
+            string lastName = Console.ReadLine();
+
+            addressBook.EditContact(firstName, lastName);
         }
     }
 
