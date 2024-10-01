@@ -27,10 +27,28 @@ namespace AddressBookApp
             Email = email;
         }
 
-        // Format in which output will be displayed
+
+        // Override Equals method to compare contacts by First and Last Name
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            Contact other = (Contact)obj;
+            return FirstName.Equals(other.FirstName, StringComparison.OrdinalIgnoreCase) &&
+                   LastName.Equals(other.LastName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // Override GetHashCode to ensure that the hash code is consistent with the Equals method
+        public override int GetHashCode()
+        {
+            return (FirstName + LastName).ToLower().GetHashCode();
+        }
+
+        // Display contact information in a readable format
         public override string ToString()
         {
-            return $"Name: {FirstName} {LastName}\nAddress: {Address}, {City}, {State} - {Zip}\nPhone: {PhoneNumber}, Email: {Email}";
+            return $"Name: {FirstName} {LastName}\nAddress: {Address}\nCity: {City}, State: {State}, Zip: {Zip}\nPhone: {PhoneNumber}\nEmail: {Email}";
         }
     }
 
@@ -39,17 +57,25 @@ namespace AddressBookApp
 
     public class AddressBook
     {
-        public List<Contact> Contacts { get; private set; } // List to store contacts in the Address Book
+        public List<Contact> Contacts { get; private set; }
 
         public AddressBook()
         {
-            Contacts = new List<Contact>(); // Initialize the contact list
+            Contacts = new List<Contact>();
         }
 
-        // Add a new contact to the Address Book
+        // Add a new contact to the Address Book after checking for duplicates
         public void AddContact(Contact contact)
         {
-            Contacts.Add(contact);
+            if (Contacts.Contains(contact))
+            {
+                Console.WriteLine("A contact with the same name already exists.");
+            }
+            else
+            {
+                Contacts.Add(contact);
+                Console.WriteLine("Contact added successfully.");
+            }
         }
 
         // Display all contacts in the Address Book
@@ -264,11 +290,10 @@ namespace AddressBookApp
         {
             Contact newContact = GetContactDetailsFromUser();
 
-            // Check if contact with the same first and last name already exists in the Address Book
+            // Check if a contact with the same first and last name already exists in the Address Book
             if (addressBook.FindContact(newContact.FirstName, newContact.LastName) == null)
             {
                 addressBook.AddContact(newContact);
-                Console.WriteLine("Contact added successfully.");
             }
             else
             {
