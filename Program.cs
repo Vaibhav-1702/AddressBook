@@ -145,7 +145,8 @@ namespace AddressBookApp
                 Console.WriteLine("2. Display Contacts");
                 Console.WriteLine("3. Edit Contact");
                 Console.WriteLine("4. Delete Contact");
-                Console.WriteLine("5. Exit");
+                Console.WriteLine("5. Add Multiple Contacts");
+                Console.WriteLine("6. Exit");
                 Console.Write("Choose an option: ");
                 int option = Convert.ToInt32(Console.ReadLine());
 
@@ -164,6 +165,9 @@ namespace AddressBookApp
                         DeleteContact();// Will jump to DeleteContact() present below
                         break;
                     case 5:
+                        AddMultipleContacts();// Will jump to AddMultipleContacts() present below
+                        break;
+                    case 6:
                         return;
                     default:
                         Console.WriteLine("Invalid option, try again.");
@@ -223,6 +227,18 @@ namespace AddressBookApp
             string lastName = Console.ReadLine();
 
             addressBook.DeleteContact(firstName, lastName);
+        }
+
+        public void AddMultipleContacts()
+        {
+            Console.Write("How many contacts do you want to add? ");
+            int count = Convert.ToInt32(Console.ReadLine());
+
+            for (int i = 0; i < count; i++)
+            {
+                Console.WriteLine($"\nEntering details for Contact {i + 1}:");
+                AddNewContact();
+            }
         }
 
 
