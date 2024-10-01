@@ -94,6 +94,23 @@ namespace AddressBookApp
             Console.WriteLine("Contact updated successfully.");
         }
 
+
+
+        public void DeleteContact(string firstName, string lastName)
+        {
+            Contact contact = FindContact(firstName, lastName);
+            if (contact == null)
+            {
+                Console.WriteLine("Contact not found.");
+                return;
+            }
+
+            Contacts.Remove(contact);
+            Console.WriteLine("Contact deleted successfully.");
+        }
+
+
+
         //This is used to find contact if conatct if user doesn't exits then it will pass null to EditContact() above
         public Contact FindContact(string firstName, string lastName)
         {
@@ -127,7 +144,8 @@ namespace AddressBookApp
                 Console.WriteLine("1. Add Contact");
                 Console.WriteLine("2. Display Contacts");
                 Console.WriteLine("3. Edit Contact");
-                Console.WriteLine("4. Exit");
+                Console.WriteLine("4. Delete Contact");
+                Console.WriteLine("5. Exit");
                 Console.Write("Choose an option: ");
                 int option = Convert.ToInt32(Console.ReadLine());
 
@@ -143,6 +161,9 @@ namespace AddressBookApp
                         EditContact();// Will jump to EditContact() present below
                         break;
                     case 4:
+                        DeleteContact();// Will jump to DeleteContact() present below
+                        break;
+                    case 5:
                         return;
                     default:
                         Console.WriteLine("Invalid option, try again.");
@@ -193,6 +214,19 @@ namespace AddressBookApp
 
             addressBook.EditContact(firstName, lastName);
         }
+
+        public void DeleteContact()
+        {
+            Console.Write("Enter First Name of the Contact to delete: ");
+            string firstName = Console.ReadLine();
+            Console.Write("Enter Last Name of the Contact to delete: ");
+            string lastName = Console.ReadLine();
+
+            addressBook.DeleteContact(firstName, lastName);
+        }
+
+
+
     }
 
 
