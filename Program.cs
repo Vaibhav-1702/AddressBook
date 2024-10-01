@@ -39,79 +39,37 @@ namespace AddressBookApp
 
     public class AddressBook
     {
-        public List<Contact> Contacts { get; set; }
+        public List<Contact> Contacts { get; private set; } // List to store contacts in the Address Book
 
         public AddressBook()
         {
-            Contacts = new List<Contact>();
+            Contacts = new List<Contact>(); // Initialize the contact list
         }
 
+        // Add a new contact to the Address Book
         public void AddContact(Contact contact)
         {
-            Contacts.Add(contact);// adds the deatils passed from below
-            Console.WriteLine("Contact added successfully.");
+            Contacts.Add(contact);
         }
 
+        // Display all contacts in the Address Book
         public void DisplayContacts()
         {
             if (Contacts.Count == 0)
             {
                 Console.WriteLine("No contacts available.");
-                return;
             }
-
-            foreach (var contact in Contacts)
+            else
             {
-                Console.WriteLine(contact);
-                Console.WriteLine("-------------------------");
+                foreach (var contact in Contacts)
+                {
+                    Console.WriteLine(contact);
+                    Console.WriteLine("----------------------------");
+                }
             }
         }
 
-       
-        // first it will search for the contact and then change the values 
-        public void EditContact(string firstName, string lastName)
-        {
-            Contact contact = FindContact(firstName, lastName);
-            if (contact == null)
-            {
-                Console.WriteLine("Contact not found.");
-                return;
-            }
-
-            Console.Write("Enter new Address: ");
-            contact.Address = Console.ReadLine();
-            Console.Write("Enter new City: ");
-            contact.City = Console.ReadLine();
-            Console.Write("Enter new State: ");
-            contact.State = Console.ReadLine();
-            Console.Write("Enter new Zip: ");
-            contact.Zip = Console.ReadLine();
-            Console.Write("Enter new Phone Number: ");
-            contact.PhoneNumber = Console.ReadLine();
-            Console.Write("Enter new Email: ");
-            contact.Email = Console.ReadLine();
-
-            Console.WriteLine("Contact updated successfully.");
-        }
-
-
-
-        public void DeleteContact(string firstName, string lastName)
-        {
-            Contact contact = FindContact(firstName, lastName);
-            if (contact == null)
-            {
-                Console.WriteLine("Contact not found.");
-                return;
-            }
-
-            Contacts.Remove(contact);
-            Console.WriteLine("Contact deleted successfully.");
-        }
-
-
-
-        //This is used to find contact if conatct if user doesn't exits then it will pass null to EditContact() above
+        // Find a contact by first and last name
         public Contact FindContact(string firstName, string lastName)
         {
             foreach (var contact in Contacts)
@@ -119,10 +77,52 @@ namespace AddressBookApp
                 if (contact.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase) &&
                     contact.LastName.Equals(lastName, StringComparison.OrdinalIgnoreCase))
                 {
-                    return contact;  // Return the contact if found
+                    return contact;
                 }
             }
             return null;
+        }
+
+        // Edit a contact in the Address Book
+        public void EditContact(string firstName, string lastName)
+        {
+            Contact contact = FindContact(firstName, lastName);
+            if (contact != null)
+            {
+                Console.Write("Enter new Address: ");
+                contact.Address = Console.ReadLine();
+                Console.Write("Enter new City: ");
+                contact.City = Console.ReadLine();
+                Console.Write("Enter new State: ");
+                contact.State = Console.ReadLine();
+                Console.Write("Enter new Zip: ");
+                contact.Zip = Console.ReadLine();
+                Console.Write("Enter new Phone Number: ");
+                contact.PhoneNumber = Console.ReadLine();
+                Console.Write("Enter new Email: ");
+                contact.Email = Console.ReadLine();
+
+                Console.WriteLine("Contact updated successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Contact not found.");
+            }
+        }
+
+        // Delete a contact in the Address Book
+        public void DeleteContact(string firstName, string lastName)
+        {
+            Contact contact = FindContact(firstName, lastName);
+            if (contact != null)
+            {
+                Contacts.Remove(contact);
+                Console.WriteLine("Contact deleted successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Contact not found.");
+            }
         }
 
     }
@@ -130,63 +130,176 @@ namespace AddressBookApp
 
     public class AddressBookManager
     {
-        private AddressBook addressBook;
+        private Dictionary<string, AddressBook> addressBooks; // Dictionary to store multiple Address Books by name
 
         public AddressBookManager()
         {
-            addressBook = new AddressBook();
+            addressBooks = new Dictionary<string, AddressBook>(); // Initialize the dictionary
         }
 
+        // Main menu to manage the Address Books and perform operations
         public void ShowMenu()
         {
             while (true)
             {
-                Console.WriteLine("1. Add Contact");
-                Console.WriteLine("2. Display Contacts");
-                Console.WriteLine("3. Edit Contact");
-                Console.WriteLine("4. Delete Contact");
-                Console.WriteLine("5. Add Multiple Contacts");
-                Console.WriteLine("6. Exit");
+                Console.WriteLine("\nMenu:");
+                Console.WriteLine("1. Add New Address Book");
+                Console.WriteLine("2. Select Address Book and Manage Contacts");
+                Console.WriteLine("3. Display All Address Books");
+                Console.WriteLine("4. Exit");
                 Console.Write("Choose an option: ");
                 int option = Convert.ToInt32(Console.ReadLine());
 
                 switch (option)
                 {
                     case 1:
-                        AddNewContact();
+                        AddNewAddressBook();
                         break;
                     case 2:
-                        addressBook.DisplayContacts();
+                        ManageAddressBook();
                         break;
                     case 3:
-                        EditContact();// Will jump to EditContact() present below
+                        DisplayAllAddressBooks();
                         break;
                     case 4:
-                        DeleteContact();// Will jump to DeleteContact() present below
-                        break;
-                    case 5:
-                        AddMultipleContacts();// Will jump to AddMultipleContacts() present below
-                        break;
-                    case 6:
+                        Console.WriteLine("Exiting...");
                         return;
                     default:
-                        Console.WriteLine("Invalid option, try again.");
+                        Console.WriteLine("Invalid option! Please try again.");
                         break;
                 }
             }
         }
 
-
-        //For adding new Contact
-        public void AddNewContact()
+        // Add a new Address Book with a unique name
+        public void AddNewAddressBook()
         {
-            var contact = GetContactDetailsFromUser(); // stores all the deatils of user 
-            addressBook.AddContact(contact); // passed to the AddContact() in AddressBook Class
+            Console.Write("Enter the name for the new Address Book: ");
+            string name = Console.ReadLine();
+
+            if (addressBooks.ContainsKey(name))
+            {
+                Console.WriteLine("An Address Book with this name already exists.");
+            }
+            else
+            {
+                addressBooks[name] = new AddressBook();
+                Console.WriteLine($"Address Book '{name}' created successfully.");
+            }
         }
 
+        // Display all the available Address Books
+        public void DisplayAllAddressBooks()
+        {
+            if (addressBooks.Count == 0)
+            {
+                Console.WriteLine("No Address Books available.");
+            }
+            else
+            {
+                Console.WriteLine("Available Address Books:");
+                foreach (var book in addressBooks.Keys)
+                {
+                    Console.WriteLine($"- {book}");
+                }
+            }
+        }
 
-        //Code to get information from the user
-        public Contact GetContactDetailsFromUser()
+        // Select an Address Book to perform actions like adding, editing, and deleting contacts
+        public void ManageAddressBook()
+        {
+            Console.Write("Enter the name of the Address Book to manage: ");
+            string name = Console.ReadLine();
+
+            if (addressBooks.ContainsKey(name))
+            {
+                AddressBook selectedAddressBook = addressBooks[name];
+                ShowAddressBookMenu(selectedAddressBook);
+            }
+            else
+            {
+                Console.WriteLine("No Address Book found with this name.");
+            }
+        }
+
+        // Menu to manage contacts within a selected Address Book
+        private void ShowAddressBookMenu(AddressBook addressBook)
+        {
+            while (true)
+            {
+                Console.WriteLine("\nAddress Book Menu:");
+                Console.WriteLine("1. Add Contact");
+                Console.WriteLine("2. Display Contacts");
+                Console.WriteLine("3. Edit Contact");
+                Console.WriteLine("4. Delete Contact");
+                Console.WriteLine("5. Go Back to Main Menu");
+                Console.Write("Choose an option: ");
+                int option = Convert.ToInt32(Console.ReadLine());
+
+                switch (option)
+                {
+                    case 1:
+                        AddContactToAddressBook(addressBook);
+                        break;
+                    case 2:
+                        addressBook.DisplayContacts();
+                        break;
+                    case 3:
+                        EditContactInAddressBook(addressBook);
+                        break;
+                    case 4:
+                        DeleteContactInAddressBook(addressBook);
+                        break;
+                    case 5:
+                        return; // Go back to the main menu
+                    default:
+                        Console.WriteLine("Invalid option! Please try again.");
+                        break;
+                }
+            }
+        }
+
+        // Add a new contact to the selected Address Book
+        public void AddContactToAddressBook(AddressBook addressBook)
+        {
+            Contact newContact = GetContactDetailsFromUser();
+
+            // Check if contact with the same first and last name already exists in the Address Book
+            if (addressBook.FindContact(newContact.FirstName, newContact.LastName) == null)
+            {
+                addressBook.AddContact(newContact);
+                Console.WriteLine("Contact added successfully.");
+            }
+            else
+            {
+                Console.WriteLine("A contact with this name already exists.");
+            }
+        }
+
+        // Edit a contact in the selected Address Book
+        public void EditContactInAddressBook(AddressBook addressBook)
+        {
+            Console.Write("Enter the First Name of the contact to edit: ");
+            string firstName = Console.ReadLine();
+            Console.Write("Enter the Last Name of the contact to edit: ");
+            string lastName = Console.ReadLine();
+
+            addressBook.EditContact(firstName, lastName);
+        }
+
+        // Delete a contact in the selected Address Book
+        public void DeleteContactInAddressBook(AddressBook addressBook)
+        {
+            Console.Write("Enter the First Name of the contact to delete: ");
+            string firstName = Console.ReadLine();
+            Console.Write("Enter the Last Name of the contact to delete: ");
+            string lastName = Console.ReadLine();
+
+            addressBook.DeleteContact(firstName, lastName);
+        }
+
+        // Helper method to get contact details from the user
+        private Contact GetContactDetailsFromUser()
         {
             Console.Write("Enter First Name: ");
             string firstName = Console.ReadLine();
@@ -206,39 +319,6 @@ namespace AddressBookApp
             string email = Console.ReadLine();
 
             return new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email);
-        }
-
-        //This part will take the existing or non existing user name and pass the value to EditContact() present in AddressBook Class
-        public void EditContact()
-        {
-            Console.Write("Enter First Name of the Contact to edit: ");
-            string firstName = Console.ReadLine();
-            Console.Write("Enter Last Name of the Contact to edit: ");
-            string lastName = Console.ReadLine();
-
-            addressBook.EditContact(firstName, lastName);
-        }
-
-        public void DeleteContact()
-        {
-            Console.Write("Enter First Name of the Contact to delete: ");
-            string firstName = Console.ReadLine();
-            Console.Write("Enter Last Name of the Contact to delete: ");
-            string lastName = Console.ReadLine();
-
-            addressBook.DeleteContact(firstName, lastName);
-        }
-
-        public void AddMultipleContacts()
-        {
-            Console.Write("How many contacts do you want to add? ");
-            int count = Convert.ToInt32(Console.ReadLine());
-
-            for (int i = 0; i < count; i++)
-            {
-                Console.WriteLine($"\nEntering details for Contact {i + 1}:");
-                AddNewContact();
-            }
         }
 
 
