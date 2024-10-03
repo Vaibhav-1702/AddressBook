@@ -194,7 +194,7 @@ namespace AddressBookApp
             }
         }
 
-        // Search for contacts by city across all Address Books
+        // Use Case 8: Search for contacts by city across all Address Books
         public void SearchContactsByCity(string city)
         {
             var contactsInCity = new List<Contact>();
@@ -208,7 +208,7 @@ namespace AddressBookApp
             DisplaySearchResults(contactsInCity, $"City: {city}");
         }
 
-        // Search for contacts by state across all Address Books
+        // Use Case 8: Search for contacts by state across all Address Books
         public void SearchContactsByState(string state)
         {
             var contactsInState = new List<Contact>();
@@ -222,7 +222,53 @@ namespace AddressBookApp
             DisplaySearchResults(contactsInState, $"State: {state}");
         }
 
-        // Display search results
+        // Use Case 10: Count contacts by city across all Address Books
+        public void CountContactsByCity()
+        {
+            var cityCount = new Dictionary<string, int>();
+
+            foreach (var addressBook in addressBooks.Values)
+            {
+                foreach (var contact in addressBook.Contacts)
+                {
+                    if (cityCount.ContainsKey(contact.City))
+                    {
+                        cityCount[contact.City]++;
+                    }
+                    else
+                    {
+                        cityCount[contact.City] = 1;
+                    }
+                }
+            }
+
+            DisplayCountResults(cityCount, "City");
+        }
+
+        // Use Case 10: Count contacts by state across all Address Books
+        public void CountContactsByState()
+        {
+            var stateCount = new Dictionary<string, int>();
+
+            foreach (var addressBook in addressBooks.Values)
+            {
+                foreach (var contact in addressBook.Contacts)
+                {
+                    if (stateCount.ContainsKey(contact.State))
+                    {
+                        stateCount[contact.State]++;
+                    }
+                    else
+                    {
+                        stateCount[contact.State] = 1;
+                    }
+                }
+            }
+
+            DisplayCountResults(stateCount, "State");
+        }
+
+        // Display the search results
         private void DisplaySearchResults(List<Contact> contacts, string criteria)
         {
             if (contacts.Count == 0)
@@ -236,6 +282,23 @@ namespace AddressBookApp
                 {
                     Console.WriteLine(contact);
                     Console.WriteLine("----------------------------");
+                }
+            }
+        }
+
+        // Display the count results
+        private void DisplayCountResults(Dictionary<string, int> countDictionary, string criteria)
+        {
+            if (countDictionary.Count == 0)
+            {
+                Console.WriteLine($"No contacts found for any {criteria}.");
+            }
+            else
+            {
+                Console.WriteLine($"\nContacts count by {criteria}:");
+                foreach (var entry in countDictionary)
+                {
+                    Console.WriteLine($"{criteria}: {entry.Key}, Count: {entry.Value}");
                 }
             }
         }
@@ -290,8 +353,6 @@ namespace AddressBookApp
             return new Contact(firstName, lastName, address, city, state, zip, phoneNumber, email);
         }
 
-
-
     }
 
 
@@ -309,7 +370,9 @@ namespace AddressBookApp
                 Console.WriteLine("2. Add Contact to Address Book");
                 Console.WriteLine("3. Search Contacts by City");
                 Console.WriteLine("4. Search Contacts by State");
-                Console.WriteLine("5. Exit");
+                Console.WriteLine("5. Count Contacts by City");
+                Console.WriteLine("6. Count Contacts by State");
+                Console.WriteLine("7. Exit");
                 Console.Write("Select an option: ");
 
                 int option = int.Parse(Console.ReadLine());
@@ -341,6 +404,14 @@ namespace AddressBookApp
                         break;
 
                     case 5:
+                        manager.CountContactsByCity();
+                        break;
+
+                    case 6:
+                        manager.CountContactsByState();
+                        break;
+
+                    case 7:
                         Console.WriteLine("Exiting program.");
                         return;
 
