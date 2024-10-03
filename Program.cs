@@ -108,6 +108,7 @@ namespace AddressBookApp
                     return contact;
                 }
             }
+
             return null;
         }
 
